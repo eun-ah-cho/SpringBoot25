@@ -1,6 +1,7 @@
 # SpringBoot25
 스프링 부트 학습용
-=============================application.properties ===============================
+
+==============application.properties ============
 
 
 spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
@@ -25,11 +26,7 @@ spring.jpa.show-sql=true
 
 
 
-
-
-
-
-=============================build. grade ================================
+=============build. grade ================
 
    //메이븐 리포지토리 에서 코드를 가져와 코끼리를 누르면 가져온다
    
