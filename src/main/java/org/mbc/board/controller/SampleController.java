@@ -76,6 +76,13 @@ public class SampleController {
         model.addAttribute("list", strList);
         model.addAttribute("map",map);
         model.addAttribute("dto",sampleDTO);
+        //리턴타입이 void이므로  /resources/templates/ex/ex2.html
+    }
+
+    @GetMapping("/ex/ex3") //http://192.168.111.105/ex/ex3 -> /resources/templates/ex/ex3.html
+    public void ex3(Model model) {
+        log.info("SampleController.ex3 메서드 실행...");
+        model.addAttribute("arr", new String[]{"전민기, 김진우, 전혜진"});
 
     }
 
