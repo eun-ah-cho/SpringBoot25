@@ -3,6 +3,8 @@ package org.mbc.board.service;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.mbc.board.dto.BoardDTO;
+import org.mbc.board.dto.PageRequestDTO;
+import org.mbc.board.dto.PageResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -85,4 +87,41 @@ public class BoardserviceTests {
         bno=?*/
 
     }
+
+    @Test
+    public void testList(){
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+                .type("tcw")
+                .keyword("1")
+                .page(1)
+                .size(10)
+                .build();
+
+        PageResponseDTO<BoardDTO> responseDTO =boardService.list(pageRequestDTO);
+        log.info(responseDTO);
+    }
+  /*  Hibernate:
+    select
+    b1_0.bno,
+    b1_0.content,
+    b1_0.moddate,
+    b1_0.regdate,
+    b1_0.title,
+    b1_0.writer
+            from
+    board b1_0
+    where
+    b1_0.bno>?
+    order by
+    b1_0.bno desc
+    limit
+        ?, ?
+    Hibernate:
+    select
+    count(b1_0.bno)
+    from
+    board b1_0
+    where
+    b1_0.bno>?*/
+
 }
