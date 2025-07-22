@@ -3,6 +3,7 @@ package org.mbc.board.repository;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.mbc.board.domain.Board;
+import org.mbc.board.dto.BoardListReplyCountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -216,52 +217,66 @@ public class BoardRepositoryTests {
         //    from
         //        board b1_0
         //    where
-        //        b1_0.title like ? escape '!'  -> like 1
+        //        b1_0.title like ? escape '!'  -> like 1  -> 조건이 1개일 경우
+
+        //Hibernate:
+        //    select
+        //        b1_0.bno,
+        //        b1_0.content,
+        //        b1_0.moddate,
+        //        b1_0.regdate,
+        //        b1_0.title,
+        //        b1_0.writer
+        //    from
+        //        board b1_0
+        //    where
+        //        (
+        //            b1_0.title like ? escape '!'
+        //            or b1_0.content like ? escape '!'   -> 조건이 2개 title, content (booleanBuilder)
+        //        )
+        //        and b1_0.bno>?  -> query.where(board.bno.gt(0L))
+        //    order by
+        //        b1_0.bno desc
+        //    limit
+        //        ?, ?   -> this.getQuerydsl().applyPagination(pageable, query);
+        //  PageRequest.of(1,10, Sort.by("bno").descending());
+
     }
 
     @Test
-    public void testSerchAll(){
-        //프론트에서 t가 선택되면 title, c가 선택되면 content, w가 선택되면 writer 가 조건으로 제시가 됨
+    public void testSearchAll(){
+        // 프론트에서 t가 선택되면 title, c가 선택되면 content, w가 선택되면 writer가 조건으로 제시됨
 
-        String[] types = {"t", "c"}; //검색 조건
+        String[] types = {"t", "w"};  // 검색 조건
 
-        String keyword = "1"; //검색 단어
+        String keyword = "10";  // 검색 단어
 
         Pageable pageable = PageRequest.of(0,10, Sort.by("bno").descending());
 
         Page<Board> result = boardRepository.searchAll(types, keyword, pageable);
 
-       /* Hibernate:
-        select
-        b1_0.bno,
-                b1_0.content,
-                b1_0.moddate,
-                b1_0.regdate,
-                b1_0.title,
-                b1_0.writer
-        from
-        board b1_0
-        where
-                (
-                        b1_0.title like ? escape '!'
-        or b1_0.content like ? escape '!'
-        )
-        and b1_0.bno>?
-                order by
-        b1_0.bno desc
-        limit
-                ?, ?
-        Hibernate:
-        select
-        count(b1_0.bno)
-        from
-        board b1_0
-        where
-                (
-                        b1_0.title like ? escape '!'
-        or b1_0.content like ? escape '!'
-        )
-        and b1_0.bno>?*/
+        //Hibernate:
+        //    select
+        //        b1_0.bno,
+        //        b1_0.content,
+        //        b1_0.moddate,
+        //        b1_0.regdate,
+        //        b1_0.title,
+        //        b1_0.writer
+        //    from
+        //        board b1_0
+        //    where
+        //        (
+        //            b1_0.title like ? escape '!'
+        //            or b1_0.content like ? escape '!'
+        //            or b1_0.writer like ? escape '!'      //   if( (types != null && types.length >0 ) && keyword !=null ){
+        //        )
+        //        and b1_0.bno>?
+        //    order by
+        //        b1_0.bno desc    // PageRequest.of(0,10, Sort.by("bno").descending());
+        //    limit
+        //        ?, ?
+
 
         log.info("전체 게시물 수 : " + result.getTotalElements());  // 99
         log.info("총 페이지 수 : " + result.getTotalPages());       // 10
@@ -272,18 +287,26 @@ public class BoardRepositoryTests {
 
         result.getContent().forEach(board -> log.info(board));
 
-
-
-
-
-
-
     }
 
+    @Test
+    public void testSearchReplyCount(){
+        String[] types = {"t", "c", "w"};
+        String keyword = "1";
+        Pageable pageable = PageRequest.of(0,10, Sort.by("bno").descending());
+        Page<BoardListReplyCountDTO> result = boardRepository.serchWithReplyCount(types, keyword, pageable);
 
+        log.info("전체 게시물 수 : " + result.getTotalElements());  // 20
+        log.info("총 페이지 수 : " + result.getTotalPages());       // 2
+        log.info("현재 페이지 번호 : " + result.getNumber());       // 0
+        log.info("페이지당 데이터 개수 : " + result.getSize() );     // 10
+        log.info("다음페이지 여부 : " + result.hasNext());          // true
+        log.info("시작페이지 여부 : " + result.isFirst());         // true
 
+        result.getContent().forEach(board -> log.info(board));
+        // BoardListReplyCountDTO(bno=100, title=제목...100(수정테스트), writer=user0, regDate=2025-07-22T11:11:46.002548, replyCount=2)
 
-
+    }
 
 
 } // 클래스 종료

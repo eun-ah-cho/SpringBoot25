@@ -8,55 +8,57 @@ import java.util.List;
 
 @Getter
 @ToString
-public class PageResponseDTO<E> { //<E> E 엔터티용 변수명 (변할 수 있는 값)
-    //페이징 처리 응답용 객체
-    //dto의 목로그 시작페이지 끝페이지 여부 등 을처리
+public class PageResponseDTO<E> { // <E> E 엔티티용 변수명 (변할 수 있는 값 )
+    // 페이징 처리 응답용 객체
+    // dto의 목록, 시작페이지/끝페이지 여부 등...
 
-    private int page, size, total ; //현재 페이지, 페이지당 게시물수, 총 게시물수, 총 게시물수
-    private int start; //시작페이지
-    private int end;  //끝페이지 번호
+    private int page, size, total ; // 현재페이지, 페이지당 게시물수, 총 게시물수
 
-    private boolean prev ; // 이전 페이지 존재 여부
-    private boolean next; //  다음 페이지 존재 여부
+    private int start ; // 시작페이지 번호
+    private int end ; // 끝페이지 번호
 
-    private List<E> dtoList ; //게시물의 목록
+    private boolean prev ; // 이전페이지 존재 여부
+    private boolean next ; // 다음페이지 존재 여부
+
+    private List<E> dtoList ; // 게시물의 목록
 
     //생성자
-    @Builder(builderMethodName = "withAll")
-    public PageResponseDTO(PageRequestDTO pageRequestDTO, List<E> dtoList, int total) {
-        //pageRequestDTO return link; //page=1&size=10&type=???&keyword=???
+    @Builder(builderMethodName = "withAll")  // PageResponsEDTO.<BoardDTO>withAll()
+    public PageResponseDTO(PageRequestDTO pageRequestDTO, List<E> dtoList, int total){
+        // PageRequestDTO return link; // page=1&size=10&type=???&keyword=????
+        // List<Board> dtoList / List<Member> dtoList // List<Item> dtoList
+        // int total -> 총 게시물 수
 
-        if(total <=0) {
+        if(total <= 0) {
+            // 게시물이 없으면!!!
             return;
-
         }
 
-    this.page = pageRequestDTO.getPage();
-    this.size = pageRequestDTO.getSize();
-    this.total = total;
-    this.dtoList = dtoList;
+        this.page = pageRequestDTO.getPage(); // 요청에 대한 페이지번호
+        this.size = pageRequestDTO.getSize(); // 요청에 대한 사이즈(게시물 수)
+        this.total = total; // 파라미터로 넘어온 값
+        this.dtoList = dtoList;  // 파라미터로 넘어온 값
 
-    this.end = (int)(Math.ceil(this.page / 10.0)) * 10; //화면에서의 마지막 번호
-        // 1~10, 11~20 이런식으로 게시판 페이지번호 끊어서 보여주려는거
-        //this.page : 현재 페이지를 10으로 나눔
-        // page=7 이면 7/10.0 = 0.7
-        // Math.ceil은 소수점 올림
-        // 현재페이지 24 , 나누기 10 = 2.4 , ceil 올림 =3, 곱하기x10 = 30 , 최종은 30
+        this.end = (int)(Math.ceil(this.page / 10.0)) * 10 ; // 화면에서의 마지막 번호
+        //                 1  <- 1.0  =  1     / 10.0
+        //   10  =             1                       * 10
 
-        this.start = this.end - 9;
-        int last =(int)(Math.ceil((total/(double)size)));
+        //                 2  <-  2.1  =  21     / 10.0
+        //  20     =           2                       * 10
 
-        this.end = end > last ? last : end; //3항연산자
-        //현재 계산한 end가 실제 존재하는 마지막 페이지보다 크면 줄여야함.
+        this.start = this.end - 9 ;
+        //   11  =        20 - 9
 
-        this.prev = this.start > 1;
-        this.next = total >= this.end * this.size ;
+        int last = (int)(Math.ceil((total/(double)size))); // 데이터 개수를 계산한 마지막 페이지 번호
+        //        만약 88개의 게시물이면 9개의 페이지 번호가 나와야 함
 
+        this.end = end > last ? last : end ;  // 3항 연산자  -> 최종 활용되는 페이지 번호
+        //           조건        참     거짓
+
+        this.prev = this.start > 1 ;   // 이전페이지 유무
+        this.next = total > this.end * this.size ; // 다음페이지 유무
 
 
     }
-
-
-
 
 }
