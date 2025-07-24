@@ -100,18 +100,20 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public PageResponseDTO<BoardListReplyCountDTO> listWithReplyCount(PageRequestDTO pageRequestDTO) {
+
         String[] types = pageRequestDTO.getTypes();
         String keyword = pageRequestDTO.getKeyword();
         Pageable pageable = pageRequestDTO.getPageable("bno");
 
-        Page<BoardListReplyCountDTO> result = boardRepository.serchWithReplyCount(types, keyword, pageable);
+        Page<BoardListReplyCountDTO> result = boardRepository.
+                searchWithReplyCount(types, keyword, pageable);
 
         return PageResponseDTO.<BoardListReplyCountDTO>withAll()
                 .pageRequestDTO(pageRequestDTO)
                 .dtoList(result.getContent())
                 .total((int)result.getTotalElements())
                 .build();
-        //리스트 페이지에 페이징처리, 정렬, 게시판의 리스트, 댓글의 개수가 리턴됨
+        // 리스트 페이지에 페이징처리, 정렬, 게시판의리스트, 댓글의 개수가 리턴됨!
     }
 
 }

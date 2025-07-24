@@ -6,14 +6,12 @@ import java.time.LocalDateTime;
 
 @Data
 public class BoardListReplyCountDTO {
-    // 댓글의 개수를 파악하여 리스트에 표시해 주는 용도
+    // 댓글의 개수를 파악하여 리스트에 표시해주는 용도
 
     private Long bno;
     private String title;
     private String writer;
     private LocalDateTime regDate;
 
-    private Long replyCount; //댓글 수!!!
-
-
+    private Long replyCount; // 댓글 수!!!!
 }
